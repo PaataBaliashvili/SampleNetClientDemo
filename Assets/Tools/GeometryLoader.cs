@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 
@@ -76,8 +77,6 @@ namespace Tools
             
              for (int i = 0; i < faces.Count ; i+=3)
              {
-                 if (i == 48)
-                     Console.WriteLine($"i = {i}");
                  var vertex1Id = faces[i];
                  var vertex2Id = faces[i + 1];
                  var vertex3Id = faces[i + 2];
@@ -86,7 +85,7 @@ namespace Tools
                  var v2 = vertices[vertex2Id];
                  var v3 = vertices[vertex3Id];
             
-                 var triangle = new Triangle(new Vertex(v1), new Vertex(v2), new Vertex(v3));
+                 var triangle = new Triangle(new Vertex(v1), new Vertex(v2), new Vertex(v3), new List<int>(){vertex1Id, vertex2Id, vertex3Id});
                  triangles.Add(triangle);
              }
            
@@ -110,7 +109,7 @@ namespace Tools
             {
                 var valueStr = subLines[i];
                 
-                if (!float.TryParse(valueStr, out var value))
+                if (!float.TryParse(valueStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
                     continue;
         
                 if (i == 0)

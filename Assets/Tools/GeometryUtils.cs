@@ -148,4 +148,52 @@ public static class GeometryUtils
 
         return isIntersecting;
     }
+    
+    public static bool IsPointInTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p)
+    {
+        bool isWithinTriangle = false;
+
+        //Based on Barycentric coordinates
+        float denominator = ((p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y));
+
+        float a = ((p2.y - p3.y) * (p.x - p3.x) + (p3.x - p2.x) * (p.y - p3.y)) / denominator;
+        float b = ((p3.y - p1.y) * (p.x - p3.x) + (p1.x - p3.x) * (p.y - p3.y)) / denominator;
+        float c = 1 - a - b;
+
+        //The point is within the triangle or on the border if 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
+        //if (a >= 0f && a <= 1f && b >= 0f && b <= 1f && c >= 0f && c <= 1f)
+        //{
+        //    isWithinTriangle = true;
+        //}
+
+        //The point is within the triangle
+        if (a > 0f && a < 1f && b > 0f && b < 1f && c > 0f && c < 1f)
+        {
+            isWithinTriangle = true;
+        }
+
+        return isWithinTriangle;
+    }
+
+    public static Vector2 CalculateCenterOfTriangle(Triangle triangle)
+    {
+        var x = (triangle.Vertex1.Position.x + triangle.Vertex1.Position.x + triangle.Vertex3.Position.x) / 3f;
+        var y = (triangle.Vertex1.Position.y + triangle.Vertex1.Position.y + triangle.Vertex3.Position.y) / 3f;
+
+        return new Vector2(x, y);
+    }
+    
+    public static Vector2 FindNearestPointOnLine(Vector2 origin, Vector2 end, Vector2 point)
+    {
+        //Get heading
+        Vector2 heading = (end - origin);
+        float magnitudeMax = heading.magnitude;
+        heading.Normalize();
+
+        //Do projection from the point but clamp it
+        Vector2 lhs = point - origin;
+        float dotP = Vector2.Dot(lhs, heading);
+        dotP = Mathf.Clamp(dotP, 0f, magnitudeMax);
+        return origin + heading * dotP;
+    }
 }

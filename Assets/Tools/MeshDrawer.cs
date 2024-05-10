@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Tools.Pathfinding;
 using UnityEngine;
 
 namespace Tools
@@ -14,10 +15,16 @@ namespace Tools
         
         private void Awake()
         {
-            var path = Path.GetFullPath(@"/Users/paata/Documents/GitRepositories/SampleNetClientDemo/Assets/NavmeshExportNavMesh.obj");
-            var geometry = GeometryLoader.LoadGeometry(path);
+            var pathToNavData = Path.GetFullPath(@"C:\Users\patat\Documents\UnityProjects\SampleNetClient\Assets\NavmeshExportNavMesh.obj");
+            var geometry = GeometryLoader.LoadGeometry(pathToNavData);
+
+            var distincted = RemoveDoubles(geometry.Item1, geometry.Item2);
+            var graph = CreateTriangleNodeGraph(geometry.Item3);
+
+
+
+            var path = AStar.FindPath(Start.position, End.position, new NodeGraph(geometry.Item1, graph));
             
-     
             GameObject meshObj = new GameObject("mesh");
             //meshObj.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             MeshFilter = meshObj.AddComponent<MeshFilter>();
@@ -77,6 +84,65 @@ namespace Tools
             //     
             //     Debug.DrawLine(p1, p2, Color.yellow, 10000000);
             // }
+        }
+
+        private static (List<Vector3>, Dictionary<int, int>) RemoveDoubles(List<Vector3> vertices, List<int> triangles)
+        {
+            var uniqueVertices = new List<Vector3>();
+            var verticesMap = new Dictionary<int, int>();
+
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var vertex = vertices[i];
+
+                if (uniqueVertices.Contains(vertex))
+                {
+                    var index = uniqueVertices.IndexOf(vertex);
+                    verticesMap.Add(i, index);
+                }
+                else
+                {
+                    uniqueVertices.Add(vertex);
+                    verticesMap.Add(i, i);
+                }
+            }
+
+            return (uniqueVertices, verticesMap);
+        }
+        
+        private static List<TriangleNode> CreateTriangleNodeGraph(List<Triangle> triangles)
+        {
+            //create nodes
+            var nodes = new List<TriangleNode>();
+            foreach (var triangle in triangles)
+            {
+                nodes.Add(new TriangleNode(triangle));
+            }
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var triangleNode1 = nodes[i];
+
+                for (int j = 0; j < nodes.Count; j++)
+                {
+                    if (i == j) continue;
+                    
+                    var triangleNode2 = nodes[j];
+
+                    int passed = 0;
+                    foreach (var vertIndex in triangleNode1.Triangle.VertIndices)
+                    {
+                        if (triangleNode2.Triangle.VertIndices.Contains(vertIndex))
+                            passed++;
+                    }
+                    
+                    if (passed > 1)
+                        triangleNode1.Neighbours.Add(triangleNode2);
+                        
+                }
+            }
+
+            return nodes;
         }
 
         private void Update()
