@@ -109,7 +109,7 @@ namespace Tools
             {
                 var valueStr = subLines[i];
                 
-                if (!float.TryParse(valueStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
+                if (!float.TryParse(valueStr, NumberStyles.Number, CultureInfo.CurrentCulture, out var value))
                     continue;
         
                 if (i == 0)

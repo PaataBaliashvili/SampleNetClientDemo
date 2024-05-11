@@ -161,10 +161,10 @@ public static class GeometryUtils
         float c = 1 - a - b;
 
         //The point is within the triangle or on the border if 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
-        //if (a >= 0f && a <= 1f && b >= 0f && b <= 1f && c >= 0f && c <= 1f)
-        //{
-        //    isWithinTriangle = true;
-        //}
+        if (a >= 0f && a <= 1f && b >= 0f && b <= 1f && c >= 0f && c <= 1f)
+        {
+            isWithinTriangle = true;
+        }
 
         //The point is within the triangle
         if (a > 0f && a < 1f && b > 0f && b < 1f && c > 0f && c < 1f)
@@ -177,8 +177,8 @@ public static class GeometryUtils
 
     public static Vector2 CalculateCenterOfTriangle(Triangle triangle)
     {
-        var x = (triangle.Vertex1.Position.x + triangle.Vertex1.Position.x + triangle.Vertex3.Position.x) / 3f;
-        var y = (triangle.Vertex1.Position.y + triangle.Vertex1.Position.y + triangle.Vertex3.Position.y) / 3f;
+        var x = (triangle.Vertex1.Position.x + triangle.Vertex2.Position.x + triangle.Vertex3.Position.x) / 3f;
+        var y = (triangle.Vertex1.Position.y + triangle.Vertex2.Position.y + triangle.Vertex3.Position.y) / 3f;
 
         return new Vector2(x, y);
     }

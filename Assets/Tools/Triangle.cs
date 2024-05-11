@@ -19,14 +19,19 @@ namespace Tools
             Vertex3 = vertex3;
             VertIndices = vertIndices;
             
-            Edges.Add(new Edge(vertIndices[0], vertIndices[1]));
-            Edges.Add(new Edge(vertIndices[1], vertIndices[2]));
-            Edges.Add(new Edge(vertIndices[2], vertIndices[1]));
+            // Edges.Add(new Edge(vertIndices[0], vertIndices[1]));
+            // Edges.Add(new Edge(vertIndices[1], vertIndices[2]));
+            // Edges.Add(new Edge(vertIndices[2], vertIndices[0]));
+            
+            Edges.Add(new Edge(Vertex1, Vertex2));
+            Edges.Add(new Edge(Vertex2, Vertex3));
+            Edges.Add(new Edge(Vertex3, Vertex1));
         }
     
         public void ChangeOrientation()
         {
             (Vertex1, Vertex2) = (Vertex2, Vertex1);
+            (Edges[0], Edges[1]) = (Edges[1], Edges[0]);
         }
     }
 }
